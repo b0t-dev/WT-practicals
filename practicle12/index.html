@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Bank Account</h1>
+    <p>Balance: <span id="balance">0</span></p>
+    <p id="error" style="color: red;"></p> <!-- show errors here instead of popup -->
+
+    <input type="number" id="amount" placeholder="Enter the Amount ">
+    <button onclick="credit()">Credit</button>
+    <button onclick="debit()">Debit</button>
+
+    <script>
+        async function credit() {
+            let amt = Number(document.getElementById("amount").value);
+            let res = await fetch('/credit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: amt })
+            });
+
+            let data = await res.json();
+            document.getElementById('balance').innerText = data.balance;
+            document.getElementById('error').innerText = ""; // clear errors
+            document.getElementById("amount").value = "";
+        }
+
+        async function debit() {
+            let amt = Number(document.getElementById("amount").value);
+            let res = await fetch('/debit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: amt })
+            });
+
+            let data = await res.json();
+            document.getElementById('balance').innerText = data.balance;
+
+            // instead of alert, show error on screen
+            if (data.error) {
+                document.getElementById('error').innerText = data.error;
+            } else {
+                document.getElementById('error').innerText = "";
+            }
+
+            document.getElementById("amount").value = "";
+        }
+    </script>
+</body>
+
+</html>
